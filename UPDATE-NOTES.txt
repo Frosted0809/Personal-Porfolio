@@ -1,0 +1,9 @@
+Extract this zip INTO your existing PortfolioXamp folder and choose "Replace".
+
+Optional cleanup (delete these old demo files, nothing uses them anymore):
+  widgets/cipher.php, widgets/cipher.js
+  widgets/word-counter.php, widgets/word-counter.js
+  api/cipher.php
+
+Manual one-line edit in config.php (not included so I don't overwrite your edits):
+  In 'bio', delete the sentence: " This site is written in PHP and loads my projects as live demos."

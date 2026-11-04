@@ -1,0 +1,11 @@
+[
+  {
+    "id": "password-checker",
+    "title": "Password Strength Checker",
+    "type": "php",
+    "file": "password-checker.php",
+    "size": "wide",
+    "description": "A PHP port of my Python command-line checker. It scores length, character variety, entropy and common passwords.",
+    "tags": ["Python", "PHP", "Security"]
+  }
+]
