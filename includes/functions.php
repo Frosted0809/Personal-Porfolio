@@ -31,19 +31,18 @@ function public_project(array $p): array {
         'size' => in_array($p['size'] ?? '', ['wide', 'tall'], true) ? $p['size'] : 'default',
         'type' => $type, 'embed' => $type === 'embed' ? safe_url($p['url'] ?? '') : '',
         'module' => $module, 'repo' => safe_url($p['repo'] ?? ''), 'live' => safe_url($p['live'] ?? ''),
+        'icon' => preg_replace('/[^a-z0-9\- ]/i', '', $p['icon'] ?? ''), 'image' => safe_url($p['image'] ?? ''),
     ];
 }
 
 // Static card for the no-JavaScript fallback.
 function render_card(array $p): void { $p = public_project($p); ?>
-    <article class="card card--<?= e($p['size']) ?>">
-      <header><h3><?= e($p['title']) ?></h3><p><?= e($p['description']) ?></p></header>
-      <footer>
-        <ul class="tags"><?php foreach ($p['tags'] as $t): ?><li><?= e($t) ?></li><?php endforeach; ?></ul>
-        <span class="links">
-          <?php if ($p['live']): ?><a href="<?= e($p['live']) ?>">Open live</a><?php endif; ?>
-          <?php if ($p['repo']): ?><a href="<?= e($p['repo']) ?>">Source</a><?php endif; ?>
-        </span>
-      </footer>
+    <article class="project-card">
+      <h3><?= e($p['title']) ?></h3>
+      <p><?= e($p['description']) ?></p>
+      <div class="btn-group">
+        <?php if ($p['live']): ?><a class="btn" href="<?= e($p['live']) ?>">Live Demo</a><?php endif; ?>
+        <?php if ($p['repo']): ?><a class="btn" href="<?= e($p['repo']) ?>">Github Repo</a><?php endif; ?>
+      </div>
     </article>
 <?php }

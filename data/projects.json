@@ -4,8 +4,8 @@
     "title": "Password Strength Checker",
     "type": "php",
     "file": "password-checker.php",
-    "size": "wide",
-    "description": "A PHP port of my Python command-line checker. It scores length, character variety, entropy and common passwords.",
-    "tags": ["Python", "PHP", "Security"]
+    "icon": "fa-solid fa-key",
+    "description": "A Python tool that scores a password on length, character variety, entropy and common passwords.",
+    "tags": ["Python", "Security"]
   }
 ]

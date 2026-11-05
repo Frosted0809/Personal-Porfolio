@@ -1,13 +1,10 @@
-<div class="pwc">
+<div class="pwc" data-tier="">
+  <p class="pwc__note">This is my Python password checker, running in your browser. Nothing you type is sent to a server.</p>
   <div class="pwc__field">
     <input type="password" data-input autocomplete="off" spellcheck="false" aria-label="Password to test" placeholder="Type a test password">
     <button type="button" class="btn btn--sm" data-toggle aria-pressed="false">Show</button>
   </div>
-  <p class="pwc__note">Demo only: don't type a real password. Nothing is stored or logged.</p>
-  <div class="pwc__result" data-result hidden>
-    <div class="pwc__head"><strong data-verdict></strong><span class="muted small" data-score></span></div>
-    <div class="pwc__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><span data-bar></span></div>
-    <p class="muted small" data-stats></p>
-    <ul class="pwc__checks" data-checks></ul>
-  </div>
+  <p class="muted small" data-status>Click the box to start Python (about 10 MB, loads once).</p>
+  <pre class="pwc__term" data-term aria-live="polite" hidden></pre>
+  <div class="pwc__bar" data-barwrap hidden><span data-bar></span></div>
 </div>

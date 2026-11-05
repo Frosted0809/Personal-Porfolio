@@ -29,39 +29,51 @@ async function getJSON(url) {
   return r.json();
 }
 
-/* ---------- projects: async cards ---------- */
+/* ---------- projects: cards like my first portfolio, demo opens in a dialog ---------- */
 const grid = document.getElementById('grid');
-const projects = new WeakMap();
+const demo = document.getElementById('demo');
+const demoTitle = demo?.querySelector('[data-demo-title]');
+const demoBody = demo?.querySelector('[data-demo-body]');
 
 function skeleton() {
-  const c = h('article', 'card');
-  c.append(h('div', 'sk sk--title'), h('div', 'sk sk--line'), h('div', 'sk sk--body'));
+  const c = h('article', 'project-card');
+  c.append(h('div', 'sk sk--icon'), h('div', 'sk sk--title'), h('div', 'sk sk--line'));
   return c;
 }
 
+function linkBtn(label, href) {
+  const a = h('a', 'btn', label);
+  a.href = href; a.target = '_blank'; a.rel = 'noopener';
+  return a;
+}
+
 function buildCard(p) {
-  const card = h('article', `card card--${p.size}`);
-  const head = h('header');
-  head.append(h('h3', null, p.title), h('p', null, p.description));
-  card.append(head);
-  if (p.type === 'embed' || p.type === 'php') {
-    const body = h('div', `card__body${p.type === 'php' ? ' card__body--inline' : ''}`);
-    body.append(h('p', 'pending', 'Loads when you scroll here'));
-    card.append(body);
+  const card = h('article', 'project-card');
+  if (p.image) {
+    const img = h('img');
+    img.src = p.image; img.alt = ''; img.loading = 'lazy';
+    card.append(img);
+  } else {
+    const ic = h('div', 'project-card__icon');
+    ic.append(h('i', p.icon || 'fa-solid fa-code'));
+    card.append(ic);
   }
-  const foot = h('footer');
+  card.append(h('h3', null, p.title), h('p', null, p.description));
   const tags = h('ul', 'tags');
   p.tags.forEach(t => tags.append(h('li', null, t)));
-  const links = h('span', 'links');
-  for (const [label, href] of [['Open live', p.live], ['Source', p.repo]]) {
-    if (!href) continue;
-    const a = h('a', null, label);
-    a.href = href; a.target = '_blank'; a.rel = 'noopener';
-    links.append(a);
+  card.append(tags);
+
+  const actions = h('div', 'btn-group');
+  if (p.type === 'php' || p.type === 'embed') {
+    const b = h('button', 'btn', 'Live Demo');
+    b.type = 'button';
+    b.addEventListener('click', () => openDemo(p));
+    actions.append(b);
+  } else if (p.live) {
+    actions.append(linkBtn('Live Demo', p.live));
   }
-  foot.append(tags, links);
-  card.append(foot);
-  projects.set(card, p);
+  if (p.repo) actions.append(linkBtn('Github Repo', p.repo));
+  card.append(actions);
   return card;
 }
 
@@ -74,39 +86,36 @@ function showError(body, message, retry) {
   body.replaceChildren(box);
 }
 
-// Each card loads on its own, so one broken project never blocks the rest.
-async function hydrate(card) {
-  const p = projects.get(card);
-  const body = card.querySelector('.card__body');
-  if (!p || !body) return;
-  const retry = () => { body.replaceChildren(h('p', 'pending', 'Loading…')); hydrate(card); };
+// The demo loads only when someone clicks Live Demo.
+async function loadDemo(p) {
+  const retry = () => { demoBody.replaceChildren(h('p', 'pending', 'Loading…')); loadDemo(p); };
   try {
     if (p.type === 'embed' && p.embed) {
       const f = h('iframe');
       f.title = p.title;
       f.setAttribute('sandbox', 'allow-scripts allow-forms');
-      f.addEventListener('load', () => body.querySelector('.pending')?.remove());
       f.src = p.embed;
-      body.replaceChildren(h('p', 'pending', 'Loading…'), f);
+      demoBody.replaceChildren(f);
     } else if (p.type === 'php') {
       const res = await fetch(`api/widget.php?id=${encodeURIComponent(p.id)}`);
       if (!res.ok) throw new Error(`widget ${res.status}`);
-      body.innerHTML = await res.text();          // trusted: written on this server
-      if (p.module) (await import(new URL(p.module, document.baseURI))).mount?.(body);
+      demoBody.innerHTML = await res.text();          // trusted: written on this server
+      if (p.module) (await import(new URL(p.module, document.baseURI))).mount?.(demoBody);
     }
   } catch (err) {
     console.error(p.id, err);
-    showError(body, `Couldn't load ${p.title}.`, retry);
+    showError(demoBody, `Couldn't load ${p.title}.`, retry);
   }
 }
 
-const observer = new IntersectionObserver(entries => {
-  for (const en of entries) {
-    if (!en.isIntersecting) continue;
-    observer.unobserve(en.target);
-    hydrate(en.target);
-  }
-}, { rootMargin: '200px' });
+function openDemo(p) {
+  demoTitle.textContent = p.title;
+  demoBody.replaceChildren(h('p', 'pending', 'Loading…'));
+  demo.showModal();
+  loadDemo(p);
+}
+demo?.addEventListener('click', e => { if (e.target === demo || e.target.closest('[data-demo-close]')) demo.close(); });
+demo?.addEventListener('close', () => demoBody.replaceChildren());
 
 async function initProjects() {
   if (!grid) return;
@@ -114,9 +123,7 @@ async function initProjects() {
   grid.replaceChildren(skeleton(), skeleton(), skeleton());
   try {
     const { projects: list } = await getJSON(grid.dataset.endpoint);
-    grid.replaceChildren();
-    if (!list.length) { grid.append(h('p', 'muted', 'No projects yet.')); return; }
-    for (const p of list) { const c = buildCard(p); grid.append(c); observer.observe(c); }
+    grid.replaceChildren(...list.map(buildCard));
   } catch (err) {
     console.error(err);
     const wrap = h('div', 'error');
@@ -130,21 +137,9 @@ async function initProjects() {
 }
 initProjects();
 
-/* ---------- contact form: async submit, PHP validates ---------- */
-const form = document.getElementById('contact-form');
-const status = document.getElementById('form-status');
-form?.addEventListener('submit', async e => {
-  e.preventDefault();
-  status.classList.remove('is-error');
-  status.textContent = 'Sending…';
-  try {
-    const r = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'fetch' } });
-    const data = await r.json();
-    status.textContent = data.message;
-    status.classList.toggle('is-error', !data.ok);
-    if (data.ok) form.reset();
-  } catch {
-    status.textContent = 'Network error. Please try again.';
-    status.classList.add('is-error');
-  }
-});
+/* ---------- contact: copy email ---------- */
+document.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('click', async () => {
+  const note = document.querySelector('[data-copy-status]');
+  try { await navigator.clipboard.writeText(btn.dataset.copy); note.textContent = 'Email copied.'; }
+  catch { note.textContent = 'Could not copy. Select the email above instead.'; }
+}));

@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
-session_start();
 require __DIR__ . '/includes/functions.php';
 $cfg = require __DIR__ . '/config.php';
-if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(16));
 
 // No projects yet? Hide the Projects section and its nav link. They return when you add one.
 if (!load_projects()) unset($cfg['nav']['projects']);

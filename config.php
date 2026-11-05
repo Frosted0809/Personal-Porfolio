@@ -6,6 +6,7 @@ return [
     'role'    => 'Information Technology Student',
     'bio'     => 'I build for the web, play CTFs, and I am learning PHP, Python and Java.',
     'photo'   => 'assets/img/hanspic.jpg',
+    'email'   => 'hanselluis0809@gmail.com',
     'github'  => 'https://github.com/Frosted0809',
     'social'  => [
         ['GitHub',   'https://github.com/Frosted0809', 'fa-brands fa-github'],
@@ -19,7 +20,7 @@ return [
         ['icon' => 'fa-solid fa-laptop-code', 'title' => 'Frontend development', 'level' => 'Foundational', 'since' => 'Since ~2 years',
          'proof' => 'Built this portfolio and its responsive layout.', 'tags' => ['HTML', 'CSS', 'JavaScript']],
         ['icon' => 'fa-brands fa-php', 'title' => 'PHP', 'level' => 'Learning', 'since' => 'Current subject',
-         'proof' => 'This site: includes, config arrays, JSON API, sessions and a validated contact form.', 'tags' => ['PHP', 'JSON', 'Sessions']],
+         'proof' => 'This site: includes, config arrays, loops and a small JSON API for the project cards.', 'tags' => ['PHP', 'JSON', 'APIs']],
         ['icon' => 'fa-regular fa-flag', 'title' => 'Capture the Flag', 'level' => 'Learning', 'since' => 'Since ~6 months',
          'proof' => 'Took part in Packet Capture: Beneath the Network CTF (Oct 2026).', 'tags' => ['Networking', 'Cybersecurity'], 'link' => '#achievements'],
         ['icon' => 'fa-brands fa-python', 'title' => 'Python', 'level' => 'Foundational', 'since' => 'Since ~2 years',

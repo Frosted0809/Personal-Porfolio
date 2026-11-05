@@ -1,14 +1,48 @@
-// The scoring runs in PHP (api/password.php). This file only sends the text and draws the result.
+// Runs the ORIGINAL Python file (projects/password-checker/main.py) in the browser with Pyodide.
+// The file is not modified: main() reads a password with input() and prints, and we feed it and capture it.
+const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+const MAIN_PY = 'projects/password-checker/main.py';
+let engine;                                          // shared, so Python loads only once
+
+function loadEngine() {
+  if (!engine) {
+    engine = (async () => {
+      await new Promise((ok, fail) => {
+        const s = document.createElement('script');
+        s.src = PYODIDE + 'pyodide.js';
+        s.onload = ok;
+        s.onerror = () => fail(new Error('Could not load Pyodide'));
+        document.head.append(s);
+      });
+      const py = await window.loadPyodide({ indexURL: PYODIDE });
+      const res = await fetch(MAIN_PY);
+      if (!res.ok) throw new Error(`main.py returned ${res.status}`);
+      py.FS.writeFile('/main.py', await res.text());
+      return py;
+    })();
+    engine.catch(() => { engine = null; });          // allow a retry after a failure
+  }
+  return engine;
+}
+
+function runMain(py, password) {
+  const lines = [];
+  let fed = false;
+  py.setStdin({ stdin: () => (fed ? undefined : ((fed = true), password)) });
+  py.setStdout({ batched: line => lines.push(line) });
+  py.runPython("import runpy\nrunpy.run_path('/main.py', run_name='__main__')");
+  return lines;
+}
+
 export function mount(root) {
   const input = root.querySelector('[data-input]');
   const toggle = root.querySelector('[data-toggle]');
-  const result = root.querySelector('[data-result]');
-  const verdict = root.querySelector('[data-verdict]');
-  const score = root.querySelector('[data-score]');
+  const status = root.querySelector('[data-status]');
+  const term = root.querySelector('[data-term]');
+  const barWrap = root.querySelector('[data-barwrap]');
   const bar = root.querySelector('[data-bar]');
-  const stats = root.querySelector('[data-stats]');
-  const checks = root.querySelector('[data-checks]');
-  let timer, seq = 0;
+  const widget = root.querySelector('.pwc');
+  let timer, started = false;
 
   toggle.addEventListener('click', () => {
     const show = input.type === 'password';
@@ -18,34 +52,33 @@ export function mount(root) {
   });
 
   async function run() {
-    const mine = ++seq;
-    if (!input.value) { result.hidden = true; return; }
+    if (!input.value) { term.hidden = true; barWrap.hidden = true; return; }
     try {
-      const body = new FormData();
-      body.append('password', input.value);
-      const r = await fetch('api/password.php', { method: 'POST', body });
-      if (!r.ok) throw new Error(r.status);
-      const d = await r.json();
-      if (mine !== seq) return;                       // ignore stale responses
-      result.hidden = false;
-      const tier = d.verdict.toLowerCase().replace(' ', '-');
-      result.dataset.tier = tier;
-      verdict.textContent = d.verdict;
-      score.textContent = `${d.score} / ${d.max}`;
-      const pct = Math.round((d.score / d.max) * 100);
-      bar.style.width = `${pct}%`;
-      bar.parentElement.setAttribute('aria-valuenow', pct);
-      stats.textContent = `${d.length} characters · ${d.entropy} bits of entropy` + (d.common ? ' · on the common-password list' : '');
-      checks.replaceChildren(...d.checks.map(c => {
-        const li = document.createElement('li');
-        li.className = c.ok ? 'ok' : 'no';
-        li.textContent = `${c.ok ? '✓' : '✗'} ${c.label}`;
-        return li;
-      }));
-    } catch {
-      result.hidden = false;
-      verdict.textContent = 'Could not reach the server.';
+      const py = await loadEngine();
+      status.textContent = 'Python is ready.';
+      const lines = runMain(py, input.value);
+      const shown = input.type === 'password' ? '•'.repeat(input.value.length) : input.value;
+      term.textContent = lines.map(l => (l.startsWith('Enter Password:') ? l + shown : l)).join('\n');
+      term.hidden = false;
+      const score = Number((lines.find(l => l.startsWith('score:')) || '').match(/\d+/)?.[0] || 0);
+      const verdict = ((lines.find(l => l.startsWith('Verdict:')) || '').split(':')[1] || '').trim().toLowerCase();
+      widget.dataset.tier = verdict;
+      bar.style.width = `${Math.min(score, 100)}%`;
+      barWrap.hidden = false;
+    } catch (err) {
+      console.error(err);
+      status.textContent = "Couldn't start Python. Check your connection and try again.";
     }
   }
-  input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 200); });
+
+  async function start() {
+    if (started) return;
+    started = true;
+    status.textContent = 'Starting Python…';
+    try { await loadEngine(); status.textContent = 'Python is ready.'; if (input.value) run(); }
+    catch (err) { console.error(err); started = false; status.textContent = "Couldn't start Python. Click the box to try again."; }
+  }
+
+  input.addEventListener('focus', start);
+  input.addEventListener('input', () => { start(); clearTimeout(timer); timer = setTimeout(run, 250); });
 }
