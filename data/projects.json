@@ -7,5 +7,23 @@
     "icon": "fa-solid fa-key",
     "description": "A Python tool that scores a password on length, character variety, entropy and common passwords.",
     "tags": ["Python", "Security"]
+  },
+  {
+    "id": "diagnosys-api",
+    "title": "DiagnoSys API",
+    "type": "link",
+    "icon": "fa-solid fa-flask",
+    "description": "A robust relational backend RESTful API built with ASP.NET Core 8 for managing clinical laboratory systems, including patients, laboratory test orders, medical test results, and billing and payments.",
+    "tags": ["ASP.NET Core 8", "REST API", "Healthcare"],
+    "repo": "https://github.com/Frosted0809/DiagnoSys_API"
+  },
+  {
+    "id": "eye-clinic-primary-digital-hub",
+    "title": "Eye Clinic Primary Digital Hub",
+    "type": "link",
+    "icon": "fa-solid fa-eye",
+    "description": "Collaborated on a digital hub for an eye clinic, providing an accessible online experience for patients and clinic services.",
+    "tags": ["Web App", "Healthcare"],
+    "live": "https://eye-clinic-primary-digital-hub.vercel.app/"
   }
 ]
