@@ -10,7 +10,8 @@
           <p class="eyebrow"><?= e($a['type']) ?></p>
           <h3><?= e($a['title']) ?></h3>
           <p class="muted">Issued by <?= e($a['issuer']) ?> &middot; <?= e($a['date']) ?></p>
-          <p>Took part in an online networking and cybersecurity CTF. Click the certificate to view it full size.</p>
+          <p><?= e($a['description'] ?? 'Click the certificate to view it full size.') ?></p>
+          <?php if (!empty($a['link'])): ?><a class="more" href="<?= e($a['link']) ?>" target="_blank" rel="noopener">View badge on Credly &rarr;</a><?php endif; ?>
         </div>
       </article>
     <?php endforeach; ?>

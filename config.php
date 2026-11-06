@@ -1,5 +1,5 @@
 <?php
-// All your content lives here. Edit this file, not the HTML.
+// content lives here. Edit file.
 return [
     'name'    => 'Hansel Luis Protacio',
     'short'   => 'Hansel Protacio',
@@ -14,13 +14,16 @@ return [
     ],
     'nav'     => ['about' => 'About', 'experience' => 'Experience', 'achievements' => 'Achievements', 'projects' => 'Projects', 'contact' => 'Contact'],
 
-    // Experience = what you can DO + proof. "since" is context, not the headline.
-    // Levels: Learning < Foundational < Comfortable < Strong (be honest, it builds trust)
+    // Levels: Learning < Foundational < Comfortable < Strong
     'experience' => [
         ['icon' => 'fa-solid fa-laptop-code', 'title' => 'Frontend development', 'level' => 'Foundational', 'since' => 'Since ~2 years',
          'proof' => 'Built this portfolio and its responsive layout.', 'tags' => ['HTML', 'CSS', 'JavaScript']],
         ['icon' => 'fa-brands fa-php', 'title' => 'PHP', 'level' => 'Learning', 'since' => 'Current subject',
          'proof' => 'This site: includes, config arrays, loops and a small JSON API for the project cards.', 'tags' => ['PHP', 'JSON', 'APIs']],
+        ['icon' => 'fa-brands fa-microsoft', 'title' => 'C# / ASP.NET Core', 'level' => 'Foundational', 'since' => 'Project experience',
+         'proof' => 'Built the DiagnoSys API with ASP.NET Core 8, Entity Framework Core, SQL Server, AutoMapper, Swagger and a layered architecture.', 'tags' => ['C#', 'ASP.NET Core', 'REST APIs', 'SQL Server']],
+        ['icon' => 'fa-solid fa-network-wired', 'title' => 'Networking / Cisco Packet Tracer', 'level' => 'Foundational', 'since' => 'Course experience',
+         'proof' => 'Completed Cisco Networking Academy\'s Introduction to Packet Tracer course and earned a verified Credly badge.', 'tags' => ['Networking', 'Cisco Packet Tracer']],
         ['icon' => 'fa-regular fa-flag', 'title' => 'Capture the Flag', 'level' => 'Learning', 'since' => 'Since ~6 months',
          'proof' => 'Took part in Packet Capture: Beneath the Network CTF (Oct 2026).', 'tags' => ['Networking', 'Cybersecurity'], 'link' => '#achievements'],
         ['icon' => 'fa-brands fa-python', 'title' => 'Python', 'level' => 'Foundational', 'since' => 'Since ~2 years',
@@ -33,5 +36,10 @@ return [
         ['title' => 'Packet Capture: Beneath the Network CTF', 'type' => 'Certificate of Participation',
          'issuer' => 'CyberPH', 'date' => '26 Oct 2026',
          'image' => 'assets/img/cyberph-certificate.png', 'alt' => 'CyberPH certificate of participation for Hansel Luis N. Protacio'],
+        ['title' => 'Introduction to Packet Tracer', 'type' => 'Cisco Networking Academy Badge',
+         'issuer' => 'Cisco Networking Academy', 'date' => 'Verified on Credly',
+         'image' => 'assets/img/introduction-to-packet-tracer.png', 'alt' => 'Verified Cisco Networking Academy Introduction to Packet Tracer badge',
+         'description' => 'Completed the Introduction to Packet Tracer course and earned a verified badge.',
+         'link' => 'https://www.credly.com/badges/badb6db2-868d-409a-a7cd-efbda1186318/public_url'],
     ],
 ];
