@@ -1,7 +1,7 @@
 # made by Hansel Protacio, PHP Portfolio
 
 Local Run: copy this folder to `C:\xampp\htdocs\PortfolioXamp`, start Apache in XAMPP, open http://localhost/PortfolioXamp/
-My Website Live URL
+My Website Live URL https://hanselpro-portfolio.freedev.app/
 No MySQL needed. The Contact section just shows the email set in `config.php` (`'email'`).
 
 ## Edit your content
